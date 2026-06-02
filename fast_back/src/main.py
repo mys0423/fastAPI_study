@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from app.infastructure.oracle import engine, Base
-from app.infastructure.redis import start_redis_client
+from app.infrastructure.oracle import engine, Base
+from app.infrastructure.redis import start_redis_client
 from app.security.cors import setup_cors
 from app.security.security_headers import setup_security
+from app.apis import member_api
 
 import app.models
 
@@ -34,3 +35,5 @@ setup_security(app)
 @app.get("/")
 def health_check(): 
     return {"message": "Hello, world! 😎"}
+
+app.include_router(member_api.router, prefix="/members", tags=["members"])

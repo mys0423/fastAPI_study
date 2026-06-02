@@ -1,4 +1,4 @@
-from app.infastructure.oracle import Base
+from app.infrastructure.oracle import Base
 
 # ORM(sqlalchemy)
 from sqlalchemy import String, Integer, BigInteger, DateTime, Sequence, UniqueConstraint
