@@ -22,7 +22,7 @@ class Member(Base):
     member_provider_id: Mapped[str | None] = mapped_column(String(255), unique=True)
     member_provider: Mapped[str] = mapped_column(String(255))
 
-    member_create_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(KST))
+    member_created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(KST))
 
     # 복합키
     __table_args__ = (

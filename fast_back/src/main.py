@@ -32,8 +32,4 @@ app = FastAPI(
 setup_cors(app)
 setup_security(app)
 
-@app.get("/")
-def health_check(): 
-    return {"message": "Hello, world! 😎"}
-
 app.include_router(member_api.router, prefix="/members", tags=["members"])

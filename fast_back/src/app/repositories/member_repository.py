@@ -126,20 +126,19 @@ class MemberRepository:
         )
         return member_claim
 
-    
     # 회원 정보 전체 조회(관리자)
     async def find_members(self):
-      # 1) 직접 작성
-      # result = await self.db.execute(FIND_MEMBERS_QUERY)
-      # members = result.mappings().all()
-      # return members
+        # 1) 직접 작성
+        # result = await self.db.execute(FIND_MEMBERS_QUERY)
+        # members = result.mappings().all()
+        # return members
 
-      # 2) Core 방식
-      query = select(Member)
-      result = await self.db.execute(query)
-      members = result.scalars().all()
-      return members
-    
+        # 2) Core 방식
+        query = select(Member)
+        result = await self.db.execute(query)
+        members = result.scalars().all()
+        return members
+
     # 회원 정보 조회(id)
     async def find_member_by_id(self, id: int) -> Member | None:
         # 1) 직접 작성
@@ -163,10 +162,10 @@ class MemberRepository:
     # 회원 정보 조회(email, provider)
     async def find_member_by_email_and_provider(self, member_email: str, member_provider: str) -> Member | None:
         # 1) 직접 작성
-        result = await self.db.execute(FIND_MEMBER_BY_EMAIL_AND_PROVIDER_QUERY, {
-          "member_email": member_email,
-          "member_provider": member_provider  
-        })
+        # result = await self.db.execute(FIND_MEMBER_BY_EMAIL_AND_PROVIDER_QUERY, {
+        #     "member_email": member_email,
+        #     "member_provider": member_provider
+        # })
 
         # # mappings: Member -> Dict key-value 매핑
         # found_member = result.mappings().one_or_none()
@@ -184,32 +183,49 @@ class MemberRepository:
 
         found_member = result.scalar_one_or_none()
         return found_member
-    
+
 
     # 회원 정보 수정
     async def update_member(self, id: int, member: MemberUpdateDTO) -> bool:
-        # 1) 직접 작성
-        # result = self.db.execute(UPDATE_MEMBER_QUERY, {
+        # # 1) 직접 작성
+        # result = await self.db.execute(UPDATE_MEMBER_QUERY, {
         #     "id": id,
-        #     "member_name": Member.member_name,
-        #     "member_age": Member.member_age,
-        #     "member_password": Member.member_password
+        #     "member_name": member.member_name,
+        #     "member_age": member.member_age
         # })
 
         # await self.db.commit()
         # return result.rowcount() > 0
 
         # 2) Core
-        new_data = {
+        new_date = {
             "id": id,
-            "member_name": Member.member_name,
-            "member_age": Member.member_age,
-            "member_password": Member.member_password
+            "member_name": member.member_name,
+            "member_age": member.member_age
         }
+
         query = (
             update(Member)
             .where(Member.id == id)
-            .values(**new_data)
+            .values(**new_date)
+        )
+
+        result = await self.db.execute(query)
+        await self.db.commit()
+        return result.rowcount() > 0
+    
+
+     # 회원 비밀번호 변경
+    async def update_password(self, id: int, member_password: str) -> bool:
+        new_date = {
+            "id": id,
+            "member_password": member_password,
+            }
+
+        query = (
+            update(Member)
+            .where(Member.id == id)
+            .values(**new_date)
         )
 
         result = await self.db.execute(query)
@@ -217,14 +233,17 @@ class MemberRepository:
         return result.rowcount() > 0
 
 
+    # 회원 썸네일 변경(S3)
     # 회원 탈퇴
-    async def delete_member(self, id: int):
+    async def delete_member(self, id: int) -> bool:
+        # 1) 직접 작성
         # result = await self.db.execute(DELETE_MEMBER_QUERY, {
         #     "id": id
         # })
         # await self.db.commit()
         # return result.rowcount() > 0
-
+    
+        # 2) Core 방법
         query = (
             delete(Member)
             .where(Member.id == id)
@@ -233,7 +252,6 @@ class MemberRepository:
         result = await self.db.execute(query)
         await self.db.commit()
         return result.rowcount() > 0
-    # 회원 썸네일 변경(S3)
 
 # 주입 팩토리 메서드
 def get_member_repository(db: AsyncSession = Depends(get_oracle_db)):
