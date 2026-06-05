@@ -19,7 +19,7 @@ class MemberService:
         if result:
             raise HTTPException(
                 status_code=409,
-                detail="이미 조재하는 이메일입니다."
+                detail="이미 존재하는 이메일입니다."
             )
 
     # 로컬 회원 가입
@@ -45,11 +45,18 @@ class MemberService:
 
     
     # 소셜 로그인과 회원가입
-    async def social_login_or_create(self, member: SocialMemberCreateDTO):
-         # 중복검사
-        await self.check_duplicate_member(member.member_email, member.member_provider)
-        member_in_db = await self.repo.create_social_member(member)
+    async def social_login_or_create(self, social_member: SocialMemberCreateDTO):
+
+        member_in_db = await self.repo.find_member_by_email_and_provider(
+            social_member.member_email,
+            social_member.member_provider
+        )
+
+        if not member_in_db:
+            member_in_db = await self.repo.create_social_member(social_member)
+            
         return member_in_db
+
 
     # 회원 정보 조회(id)
     async def get_member_by_id(self, id: int):
@@ -64,6 +71,19 @@ class MemberService:
         # ORM Member -> MemberResponseDTO
         return MemberResponseDTO.model_validate(found_member)
 
+
+    # 회원 정보 조회(member_email, member_provider)
+    async def get_member_for_login(self, member_email: str, member_provider: str):
+        found_member = await self.repo.find_member_by_email_and_provider(member_email, member_provider)
+
+        if not found_member:
+            raise HTTPException(
+                status_code=404,
+                detail="회원을 찾을 수 없습니다"
+            )
+
+        # ORM Member -> MemberResponseDTO
+        return found_member
 
     # 회원 정보 조회(member_email, member_provider)
     async def get_member_by_email_and_provider(self, member_email: str, member_provider: str):
@@ -110,6 +130,10 @@ class MemberService:
             )
 
     # 회원 이미지 수정S3
+
+
+
+
     # 회원 탈퇴
     async def withdraw(self, id: int):
         is_deleted = await self.repo.delete_member(id)

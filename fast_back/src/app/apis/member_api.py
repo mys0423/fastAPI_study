@@ -115,10 +115,10 @@ async def update_member(
 )
 async def update_password(
     id: int,
-    new_password: str,
+    password_dto: PasswordUpdateDTO,
     member_service: MemberService = Depends(get_member_service)
 ):
-    await member_service.update_password(id, new_password)
+    await member_service.update_password(id, password_dto.new_password)
     return ApiResponseDTO(
         success=True,
         message="비밀번호 변경 성공"

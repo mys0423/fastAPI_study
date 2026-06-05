@@ -9,7 +9,7 @@ load_dotenv()
 REFRESH_TOKEN_PREFIX = os.getenv("REFRESH_TOKEN_PREFIX")
 TOKEN_BLACKLIST_PREFIX = os.getenv("TOKEN_BLACKLIST_PREFIX")
 
-class RedisServcie:
+class RedisService:
     def __init__(self, repo):
         self.repo = repo 
 
@@ -67,4 +67,4 @@ class RedisServcie:
         return await self.repo.exists(key)
 
 def get_redis_service(redis: Redis = Depends(get_redis_repository)):
-    return RedisServcie(redis)
+    return RedisService(redis)

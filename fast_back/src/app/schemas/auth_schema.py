@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from app.enums.member_enum import MemberProvider
+from app.schemas.member_schema import MemberClaimsDTO
 
 # DTO
 class JwtTokenDTO(BaseModel):
@@ -18,3 +19,7 @@ class SocialLoginRequestDTO(BaseModel):
   member_picture: str | None = None  
   member_provider_id: str | None = None  
   member_provider: MemberProvider | None = None
+
+class AuthContextDTO(BaseModel):
+  tokens: JwtTokenDTO
+  member_claims: MemberClaimsDTO

@@ -39,7 +39,7 @@ class MemberUpdateDTO(BaseModel):
     member_age: int | None = None
 
 class PasswordUpdateDTO(BaseModel):
-    member_password: str
+    new_password: str
 
 # 응답용
 class MemberResponseDTO(BaseModel):
