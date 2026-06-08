@@ -7,7 +7,7 @@ from app.schemas.common_schema import ApiResponseDTO
 from app.schemas.member_schema import MemberClaimsDTO
 from app.schemas.auth_schema import LoginRequestDTO, SocialLoginRequestDTO, JwtTokenDTO, AuthContextDTO
 from app.enums.member_enum import MemberProvider
-from app.dependencies.auth_dependency import get_tokens
+from app.dependencies.auth_dependency import get_auth_context
 
 # 소셜 로그인용 import
 import httpx
@@ -71,7 +71,7 @@ async def login(
 )
 async def logout(
     response:Response,
-    auth_context: AuthContextDTO  = Depends(get_tokens),
+    auth_context: AuthContextDTO  = Depends(get_auth_context),
     auth_servcie: AuthService = Depends(get_auth_service)
 ):
     

@@ -4,7 +4,7 @@ from app.infrastructure.oracle import engine, Base
 from app.infrastructure.redis import start_redis_client
 from app.security.cors import setup_cors
 from app.security.security_headers import setup_security
-from app.apis import member_api, auth_api, file_api
+from app.apis import member_api, auth_api, file_api, post_api
 
 import app.models
 
@@ -35,3 +35,4 @@ setup_security(app)
 app.include_router(member_api.router, prefix="/members", tags=["members"])
 app.include_router(auth_api.router, prefix="/auth", tags=["/auth"])
 app.include_router(file_api.router, prefix="/auth", tags=["/files"])
+app.include_router(post_api.router, prefix="/posts", tags=["/posts"])

@@ -2,8 +2,13 @@ from app.infrastructure.oracle import Base
 
 # ORM(sqlalchemy)
 from sqlalchemy import String, Integer, BigInteger, DateTime, Sequence, UniqueConstraint
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timedelta, timezone
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+  from app.models.post_model import Post
 
 KST = timezone(timedelta(hours=9)) # UTC+9
 
@@ -27,5 +32,12 @@ class Member(Base):
     # 복합키
     __table_args__ = (
         UniqueConstraint("member_email", "member_provider", name="uq_member_email_member_provider"),
+    )
+
+    # 회원 1 : 게시글 N
+    posts: Mapped[list["Post"]] = relationship(
+       "Post",
+       back_populates="member",
+       cascade="all, delete-orphan"
     )
     

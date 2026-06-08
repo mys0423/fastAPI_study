@@ -4,7 +4,7 @@ from app.schemas.auth_schema import JwtTokenDTO, AuthContextDTO
 from app.utils.jwt_token_util import parse_token
 from jose import JWTError
 
-def get_tokens(request: Request) -> JwtTokenDTO:
+def get_auth_context(request: Request) -> JwtTokenDTO:
     access_token = request.cookies.get("access_token")
     refresh_token = request.cookies.get("refresh_token")
 
