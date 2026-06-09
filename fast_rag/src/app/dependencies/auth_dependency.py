@@ -5,7 +5,6 @@ from app.utils.jwt_token_util import parse_token
 from app.services.redis_service import RedisService, get_redis_service
 from jose import JWTError
 
-
 async def get_auth_context(
         request: Request,
         redis_service: RedisService = Depends(get_redis_service)
@@ -17,12 +16,6 @@ async def get_auth_context(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="접근 권한 없음(access token)"
-        )
-    
-    if not redis_service.is_blacklisted_token(access_token):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="만료된 토큰입니다."
         )
     
     try:
@@ -44,4 +37,8 @@ async def get_auth_context(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="유효하지 않은 토큰"
         )
+    
+    return 
+
+
     
