@@ -19,8 +19,8 @@ async def chat(
     auth_context: MemberClaimsDTO = Depends(get_auth_context),
     langchain_service: LangChainService = Depends(get_langchain_service)
 ):
-    
-    result = await langchain_service.chat(chat_reqeust_dto)
+    member_id = auth_context.member_claims.id 
+    result = await langchain_service.chat(member_id, chat_reqeust_dto)
     return ApiResponseDTO(
         success=True,
         message="응답 성공",
@@ -38,7 +38,8 @@ async def chat_stream(
     langchain_service: LangChainService = Depends(get_langchain_service)
 ):
     
+    member_id = auth_context.member_claims.id 
     return StreamingResponse(
-        langchain_service.chat_stream(chat_reqeust_dto),
+        langchain_service.chat_stream(member_id, chat_reqeust_dto),
         media_type="text/plain"
     )

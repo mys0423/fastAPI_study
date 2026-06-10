@@ -85,5 +85,47 @@ class S3Service:
         return buffer
 
 
+    # Rag용 file upload
+    async def upload_file(self, file, folder: str) -> FileUploadResponseDTO:
+        original_filename = os.path.basename(file.filename)
+        file_ext = original_filename.split(".")[-1].lower()
+        file_uuid = str(uuid.uuid4())
+
+        save_filename = f"{file_uuid}_{original_filename}"
+        key = f"{folder}/{save_filename}"
+
+        await self.repo.upload_fileobj(
+            file.file,
+            key,
+            file.content_type
+        )
+
+        return FileUploadResponseDTO(
+            original_key=key,
+            original_filename=original_filename,
+            original_file_ext=file_ext,
+            original_file_url=await self.get_url(key)
+        )
+
+    # rag output file upload
+    async def upload_local_file(self, local_path: str, folder: str):
+        original_filename = os.path.basename(local_path)
+        file_ext = original_filename.split(".")[-1].lower()
+        file_uuid = str(uuid.uuid4())
+        save_filename = f"{file_uuid}_{original_filename}"
+        key = f"{folder}/{save_filename}"
+        content_type = f"image/{file_ext}" if file_ext in ["png", "jpg", "jpeg"] else "application/octet-stream"
+
+        with open(local_path, "rb") as f:
+            await self.repo.upload_fileobj(f, key, content_type)
+
+        return FileUploadResponseDTO(
+            original_key=key,
+            original_filename=original_filename,
+            original_file_ext=file_ext,
+            original_file_url=await self.get_url(key)
+        )
+
+
 def get_s3_service(s3_repo: S3Repository = Depends(get_s3_repository)):
     return S3Service(s3_repo)
