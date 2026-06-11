@@ -28,6 +28,7 @@ dependencies:
         - git+https://github.com/HKUDS/RAG-Anything.git
         - lightrag-hku==1.4.16
         - docling
+        - docling-parse
         - pymupdf
         - opencv-python-headless
         - pypdf

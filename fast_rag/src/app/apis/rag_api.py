@@ -17,7 +17,7 @@ async def upload_pdf(
 ):
   member_id = auth_context.member_claims.id
 
-  if not file.filename.lower().endwsith(".pdf") or file.content_type != "application/pdf":
+  if not file.filename.lower().endswith(".pdf") or file.content_type != "application/pdf":
     return ApiResponseDTO(
       success=False,
       message="pdf 파일만 업로드 가능합니다."

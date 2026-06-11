@@ -1,6 +1,6 @@
 from fastapi import Depends
 from app.infrastructure.postgresql import get_postgrsql_db
-from sqlalchemy import select, update, delete, insert, text
+from sqlalchemy import insert, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.schemas.document_schema import DocumentCreateDTO, DocumentResponseDTO
 from app.models.document_model import Document
@@ -41,31 +41,5 @@ class DocumentRepository:
         return result.rowcount > 0
     
     
-    # rag anything용 쿼리(local -> s3 주소로 변경쿼리)
-    async def replace_image_path_in_all_chunks(self, local_path: str, s3_url: str) -> None:
-        # lightrag_vdb_chunks
-        await self.db.execute(
-            text(
-                "update lightrag_vdb_chunks set content = REPLACE(content, :local_path, :s3_url)", 
-                {
-                    "local_path": local_path, 
-                    "s3_url": s3_url
-                }
-            )
-        )
-
-       # lightrag_doc_chunks
-        await self.db.execute(
-            text(
-                "update lightrag_doc_chunks set content = REPLACE(content, :local_path, :s3_url)", 
-                {
-                    "local_path": local_path, 
-                    "s3_url": s3_url
-                }
-            )
-        )
-
-        await self.db.commit()
-
 def get_document_repository(db: AsyncSession = Depends(get_postgrsql_db)):
     return DocumentRepository(db)

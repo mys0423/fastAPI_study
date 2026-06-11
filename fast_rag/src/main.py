@@ -1,3 +1,15 @@
+import os
+import sys
+
+# docling path 오류 해결코드 시작할 때 자동으로 import
+docling_parse_path = os.path.join(sys.prefix, "Lib", "site-packages", "docling_parse")
+os.add_dll_directory(docling_parse_path)
+
+# hugging face 권한 설정
+os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
+os.environ["HF_HUB_DISABLE_SYMLINKS"] = "1"
+os.environ["HUGGINGFACE_HUB_CACHE"] = "C:/hf_cache"
+
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from app.infrastructure.postgresql import engine, Base
@@ -7,20 +19,19 @@ from app.security.cors import setup_cors
 from app.security.security_headers import setup_security
 
 import app.models
-from app.apis import openai_api, langchain_api, rag_api
+from app.apis import langchain_api, openai_api, rag_api
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-  
+
     async with init_redis_client(app), init_rag_anything(app):
         print("Redis 실행 완료!")
 
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
             print("POSTGRESQL 연결 성공!")
-        
+
         yield
-    
 
 # Swagger
 # http://localhost:8000/docs
